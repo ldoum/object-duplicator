@@ -52,6 +52,27 @@ class OBJECT_OT_Toggle_Z_Mode(OperatorMixin, bpy.types.Operator):
         
         return {"FINISHED"}  
         
+class OBJECT_OT_Reset_All(OperatorMixin, bpy.types.Operator):
+    bl_idname = "my_operator.reset_dupe_data"
+    bl_label = "My Class Name"
+    bl_description = "Description that shows in blender tooltips"
+    
+    def execute(self, context):
+        
+        self.props.copies_x_line = 1
+        self.props.distance_x_line = 1.00
+        self.props.direction_of_x_line_copies = "RIGHT"
+        
+        self.props.copies_y_line = 1
+        self.props.distance_y_line = 1.00
+        self.props.direction_of_y_line_copies = "FORWARD"
+        
+        self.props.copies_z_line = 1
+        self.props.distance_z_line = 1.00
+        self.props.direction_of_z_line_copies = "UP"
+        
+        return {"FINISHED"} 
+        
 class OBJECT_OT_Duplicate_All(OperatorMixin, bpy.types.Operator):
     bl_idname = "my_operator.apply_duplication"
     bl_label = "My Class Name"
@@ -107,7 +128,7 @@ classes = [
     OBJECT_OT_Toggle_X_Mode,
     OBJECT_OT_Toggle_Y_Mode,
     OBJECT_OT_Toggle_Z_Mode,
-   
+    OBJECT_OT_Reset_All,
 ]
 
 
@@ -120,4 +141,5 @@ def unregister():
         bpy.utils.register_class(cls)
     
 if __name__ == "__main__":
+
     register()
