@@ -1,3 +1,7 @@
+### [3.1.1]
+1157pm 10/18/2025
+1. Switched the arrangement of the items list in the property direction_of_x_lie_copies for the sake of consistency. Tuples for the positive direction on the axis are first.
+
 ### [3.1.0]
 
 1152pm 10/18/2025
@@ -70,4 +74,5 @@ Added metadata. Blender auto installed it. Showed up on Preferences. Fully opera
 606am 3/12/2025
 
 First test. Blender threw an error. Forgot to add metadata.
+
 
