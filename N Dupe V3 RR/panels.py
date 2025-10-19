@@ -11,34 +11,28 @@ class OBJECT_PT_Duplicates_Panel(PanelMixin, bpy.types.Panel):
     bl_idname = "panelname"
     bl_label = "N Duplicator"
     
-
     def draw(self, context):
         layout = self.layout
         props = context.scene.dupe_props
       
         #all in the box
         boxy = layout.box()
-        
-        column2 = boxy.column(align=True)
+        column1 = boxy.column(align=True)
        
-
         set_panel = [
             ("X", props.toggle_x_axis, "copies_x_line", "distance_x_line" ,"direction_of_x_line_copies" ),
             ("Y", props.toggle_y_axis, "copies_y_line", "distance_y_line" ,"direction_of_y_line_copies" ),
             ("Z", props.toggle_z_axis, "copies_z_line", "distance_z_line" ,"direction_of_z_line_copies" ),
-        
         ]
         
         for axis_name, visible, number_copies, distance_from_item, axis_path in set_panel:
         
             if visible:
-                column2.label(text = axis_name)
-                column2.prop(props, number_copies)
-                column2.prop(props, distance_from_item)
-                column2.prop(props, axis_path, expand=True)
-                
-            ### design your panel here ###
-   
+                column1.label(text = axis_name)
+                column1.prop(props, number_copies)
+                column1.prop(props, distance_from_item)
+                column1.prop(props, axis_path, expand=True)
+           
         ###axis toggles
         row1 = layout.row(align=True)
         row1.operator(OBJECT_OT_Toggle_X_Mode.bl_idname, text="X", depress=props.toggle_x_axis)
@@ -46,20 +40,15 @@ class OBJECT_PT_Duplicates_Panel(PanelMixin, bpy.types.Panel):
         row1.operator(OBJECT_OT_Toggle_Z_Mode.bl_idname, text="Z", depress=props.toggle_z_axis)
         
         row2 = layout.row()
-        row2.operator(OBJECT_OT_Duplicate_All.bl_idname, text="Fire!")
+        row2.operator(OBJECT_OT_Duplicate_All.bl_idname, text="Fire")
+        row2.operator(OBJECT_OT_Reset_All.bl_idname, text="Reset")
 
 ###PANELS END
-
-
-
-
-
 
 ###register/unregister
 classes = [
     OBJECT_PT_Duplicates_Panel,
 ]
-
 
 def register():
     for cls in classes:
@@ -70,4 +59,5 @@ def unregister():
         bpy.utils.register_class(cls)
     
 if __name__ == "__main__":
+
     register()
