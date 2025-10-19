@@ -15,7 +15,6 @@ bl_info = {
 from . import operators, panels, properties
 
 def register():
-    
     properties.register()
     operators.register()    
     panels.register()
@@ -28,3 +27,4 @@ def unregister():
 if __name__ == "__main__":
 
     register()
+
