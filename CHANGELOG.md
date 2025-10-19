@@ -1,3 +1,10 @@
+### [3.1.0]
+
+1152pm 10/18/2025
+
+1. Add reset button to set property data to default values.
+2. Add operator to handle reset feature. Assign the value used as default to the 9 properties there.
+
 ### [3.0.0]
 
 127am 10/16/2025
@@ -63,3 +70,4 @@ Added metadata. Blender auto installed it. Showed up on Preferences. Fully opera
 606am 3/12/2025
 
 First test. Blender threw an error. Forgot to add metadata.
+
