@@ -52,13 +52,14 @@ class DuplicateObjectProperties(bpy.types.PropertyGroup):
         min = 1.00,
         max = 100.00
     )
-    
+
+    ### set direction of duplication
     direction_of_x_line_copies: bpy.props.EnumProperty(
         name = "X Direction",
         description = "Direction of copies on X axis",
         items = [
-            ('LEFT', "Left", "Copies will be created to the left"),
-            ('RIGHT', "Right", "Copies will be created to the right")
+            ('RIGHT', "Right", "Copies will be created to the right"),
+            ('LEFT', "Left", "Copies will be created to the left")
         ],
         default = 'RIGHT'
     )
@@ -105,11 +106,8 @@ class DuplicateObjectProperties(bpy.types.PropertyGroup):
 
 ###register/unregister
 classes = [
-    
     DuplicateObjectProperties,
-   
 ]
-
 
 def register():
     for cls in classes:
