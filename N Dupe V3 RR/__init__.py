@@ -3,7 +3,7 @@ bl_info = {
     "blender": (2, 8, 0),
     "category": "Object",
     "author": "Lancine Doumbia", #maintainer
-    "version": (3, 1, 1), 
+    "version": (3, 1, 2), 
     "location": "View3D > Sidebar", #important
     "description": "Duplicate an object N times", #
     "warning": "",
@@ -26,5 +26,6 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 
