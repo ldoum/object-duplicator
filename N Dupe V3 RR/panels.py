@@ -1,5 +1,6 @@
 import bpy
 from .operators import *
+from .properties import *
 
 ###PANELS
 class PanelMixin:
@@ -60,4 +61,5 @@ def unregister():
     
 if __name__ == "__main__":
     register()
+
 
