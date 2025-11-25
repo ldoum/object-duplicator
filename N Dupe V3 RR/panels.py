@@ -9,7 +9,7 @@ class PanelMixin:
     bl_category = "Duplicator"
     
 class OBJECT_PT_Duplicates_Panel(PanelMixin, bpy.types.Panel):
-    bl_idname = "panelname"
+    bl_idname = "my_panel.duplicate_stuff"
     bl_label = "N Duplicator"
     
     def draw(self, context):
@@ -61,6 +61,7 @@ def unregister():
     
 if __name__ == "__main__":
     register()
+
 
 
 
