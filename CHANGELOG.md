@@ -1,3 +1,11 @@
+### [3.1.3]
+1157pm 11/25/2025
+1. Gave the add-on a new location category
+
+### [3.1.2]
+1120pm 11/21/2025 Friday
+1. Fixed the unregister functions for all files.
+   
 ### [3.1.1]
 1157pm 10/18/2025
 1. Switched the arrangement of the items list in the property direction_of_x_line_copies for the sake of consistency. Tuples for the positive direction on the axis are first.
@@ -74,6 +82,7 @@ Added metadata. Blender auto installed it. Showed up on Preferences. Fully opera
 606am 3/12/2025
 
 First test. Blender threw an error. Forgot to add metadata.
+
 
 
 
