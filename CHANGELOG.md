@@ -1,5 +1,9 @@
+### [3.1.4]
+845am 11/25/2025
+1. Gave an unique bl_idname for the panel class
+
 ### [3.1.3]
-1157pm 11/25/2025
+827am 11/25/2025
 1. Gave the add-on a new location category
 
 ### [3.1.2]
@@ -82,6 +86,7 @@ Added metadata. Blender auto installed it. Showed up on Preferences. Fully opera
 606am 3/12/2025
 
 First test. Blender threw an error. Forgot to add metadata.
+
 
 
 
