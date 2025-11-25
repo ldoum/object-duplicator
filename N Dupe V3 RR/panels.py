@@ -6,7 +6,7 @@ from .properties import *
 class PanelMixin:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Duplicator"
+    bl_category = "Tool"
     
 class OBJECT_PT_Duplicates_Panel(PanelMixin, bpy.types.Panel):
     bl_idname = "my_panel.duplicate_stuff"
@@ -61,6 +61,7 @@ def unregister():
     
 if __name__ == "__main__":
     register()
+
 
 
 
