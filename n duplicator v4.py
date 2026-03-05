@@ -3,7 +3,7 @@ bl_info = {
     "blender": (2, 8, 0),
     "category": "Object",
     "author": "Lancine Doumbia", #maintainer
-    "version": (4, 0, 0), 
+    "version": (4, 0, 1), 
     "location": "View3D > Sidebar", #important
     "description": "Duplicate an object N times", #
     "warning": "",
@@ -216,17 +216,17 @@ class OT_Reset_All(bpy.types.Operator):
         
         dupe_props.copies_on_x_axis = 1
         dupe_props.distance_on_x_axis = 1.00
-        dupe_props.positive_x_axis = "RIGHT"
+        dupe_props.positive_x_axis = False
         dupe_props.toggle_copy_on_x_axis = False
         
         dupe_props.copies_on_y_axis = 1
         dupe_props.distance_on_y_axis = 1.00
-        dupe_props.positive_y_axis = "FORWARD"
+        dupe_props.positive_y_axis = False
         dupe_props.toggle_copy_on_y_axis = False
         
         dupe_props.copies_on_z_axis = 1
         dupe_props.distance_on_z_axis = 1.00
-        dupe_props.positive_z_axis = "UP"
+        dupe_props.positive_z_axis = False
         dupe_props.toggle_copy_on_z_axis = False
         
         dupe_props.linked_duplicate = False
@@ -307,4 +307,5 @@ def unregister():
     del bpy.types.Scene.dupe_props
     
 if __name__ == "__main__":
+
     register()
