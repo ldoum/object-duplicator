@@ -22,7 +22,7 @@ def formula(n, distance, axis, negate, collection_n, linked_obj):
             newbie = sing_obj.copy()
             
             #handles objects w/o edit data
-            if sing_obj.type not in ("EMPTY", "SPEAKER", "LIGHT"):
+            if sing_obj.type != "EMPTY":
                 
                 # automate linked duplication. transfer data
                 if linked_obj:
@@ -70,3 +70,4 @@ if toggle_y:
 if toggle_z:
     formula(copies_z, distance_z, 2, 'UP' if bool(direction_z) else 'DOWN', n_x, linked)      
         
+
