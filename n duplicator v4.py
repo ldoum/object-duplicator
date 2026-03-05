@@ -3,7 +3,7 @@ bl_info = {
     "blender": (2, 8, 0),
     "category": "Object",
     "author": "Lancine Doumbia", #maintainer
-    "version": (4, 0, 2), 
+    "version": (4, 1, 0), 
     "location": "View3D > Sidebar", #important
     "description": "Duplicate an object N times", #
     "warning": "",
@@ -158,7 +158,16 @@ class OT_Duplicate_All(bpy.types.Operator):
 
     @classmethod
     def poll(cls,context):
-        return context.selected_objects
+
+        active_x = dupe_props.toggle_copy_on_x_axis
+        active_y = dupe_props.toggle_copy_on_y_axis
+        active_z = dupe_props.toggle_copy_on_z_axis
+
+        #prevent placeholder collections from being added if no axis is selected
+        if context.selected_objects and (active_x or active_y or active_z):
+            return True 
+        else:
+            return False
 
     def execute(self, context):
         
@@ -313,4 +322,5 @@ def unregister():
 if __name__ == "__main__":
 
     register()
+
 
