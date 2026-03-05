@@ -158,7 +158,7 @@ class OT_Duplicate_All(bpy.types.Operator):
 
     @classmethod
     def poll(cls,context):
-
+        dupe_props = context.scene.dupe_props
         active_x = dupe_props.toggle_copy_on_x_axis
         active_y = dupe_props.toggle_copy_on_y_axis
         active_z = dupe_props.toggle_copy_on_z_axis
@@ -322,5 +322,6 @@ def unregister():
 if __name__ == "__main__":
 
     register()
+
 
 
