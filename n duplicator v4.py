@@ -3,7 +3,7 @@ bl_info = {
     "blender": (2, 8, 0),
     "category": "Object",
     "author": "Lancine Doumbia", #maintainer
-    "version": (4, 0, 1), 
+    "version": (4, 0, 2), 
     "location": "View3D > Sidebar", #important
     "description": "Duplicate an object N times", #
     "warning": "",
@@ -253,25 +253,29 @@ class PT_Duplicates_Panel(bpy.types.Panel):
       
         
         ###axis toggles
-        row1 = layout.row(align=True)
-        row1.prop(props, "toggle_copy_on_x_axis", toggle=True)
-        row1.prop(props, "copies_on_x_axis")
-        row1.prop(props, "distance_on_x_axis")
-        row1.prop(props, "positive_x_axis", toggle=True)
+        row1 = layout.row()
+        col1 = row1.column(align=True)
+        col1.prop(props, "toggle_copy_on_x_axis", toggle=True)
+        col1.prop(props, "copies_on_x_axis")
+        col1.prop(props, "distance_on_x_axis")
+        col1.prop(props, "positive_x_axis", toggle=True)
       
         
-        row2 = layout.row(align=True)
-        row2.prop(props, "toggle_copy_on_y_axis", toggle=True)
-        row2.prop(props, "copies_on_y_axis")
-        row2.prop(props, "distance_on_y_axis")
-        row2.prop(props, "positive_y_axis", toggle=True)
+        row2 = layout.row()
+        col2 = row2.column(align=True)
+        col2.prop(props, "toggle_copy_on_y_axis", toggle=True)
+        col2.prop(props, "copies_on_y_axis")
+        col2.prop(props, "distance_on_y_axis")
+        col2.prop(props, "positive_y_axis", toggle=True)
        
         
-        row3 = layout.row(align=True)
-        row3.prop(props, "toggle_copy_on_z_axis", toggle=True)
-        row3.prop(props, "copies_on_z_axis")
-        row3.prop(props, "distance_on_z_axis")
-        row3.prop(props, "positive_z_axis", toggle=True)
+        row3 = layout.row()
+        col3 = row3.column(align=True)
+        col3.prop(props, "toggle_copy_on_z_axis", toggle=True)
+        col3.prop(props, "copies_on_z_axis")
+        col3.prop(props, "distance_on_z_axis")
+        col3.prop(props, "positive_z_axis", toggle=True)
+        
         
         #linked duplicate toggle
         row_linked = layout.row()   
@@ -309,3 +313,4 @@ def unregister():
 if __name__ == "__main__":
 
     register()
+
