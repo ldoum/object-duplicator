@@ -1,11 +1,11 @@
 bl_info = {
-    "name": "N duplicator", #
+    "name": "N duplicator", 
     "blender": (2, 8, 0),
     "category": "Object",
-    "author": "Lancine Doumbia", #maintainer
-    "version": (4, 1, 0), 
-    "location": "View3D > Sidebar", #important
-    "description": "Duplicate an object N times", #
+    "author": "Lancine Doumbia", 
+    "version": (4, 2, 0), 
+    "location": "View3D > Sidebar", 
+    "description": "Duplicate an object N times", 
     "warning": "",
     "doc_url": "",
     "tracker_url": "",
@@ -14,8 +14,32 @@ bl_info = {
 
 import bpy
 
+def object_available(obj, search):
+   
+    return (
+        obj.name.startswith(search.lower()) or
+        obj.name.startswith(search.upper()) or
+        obj.name.startswith(search)
+        )
+
+def get_available_objects_in_scene(self, context):
+    search = context.scene.dupe_props.object_search
+    
+    queue = []
+   
+    # if local items list is empty, add a default entry to prevent errors
+    if context.scene.objects:
+        queue = [(obj.name, obj.name, "") for obj in context.scene.objects if object_available(obj, search)]
+       
+        if queue:
+            return queue
+        else:
+            return [("NOTHING", "Object(s) not found", "")]
+   
+    return [("EMPTY", "No objects in this scene", "")]
+
 ###PROPERTIES
-class DuplicationProperties(bpy.types.PropertyGroup):
+class NDUPEADDON_PG_DuplicationProperties(bpy.types.PropertyGroup):
     
     ### Number of copies on X, Y and Z axis
     copies_on_x_axis: bpy.props.IntProperty(
@@ -112,10 +136,38 @@ class DuplicationProperties(bpy.types.PropertyGroup):
         default = False
     )
     
+    # choose mode of duplication 
+    mode_of_duplication: bpy.props.EnumProperty(
+        name = "Mode of Duplication",
+        description = "Choose the mode of duplication",
+        items = [
+            ('GRID', "Grid", "Copies will be created to the right"),
+            ('SPAWN', "Spawn", "Copies will be created to the left"),
+        ],
+        default = 'GRID'
+    )
+    
+    #select objects to duplicate from a dropdown list of all objects in the scene, filtered by search query
+    object_selection: bpy.props.EnumProperty(
+        name = "Object Scan",
+        description = "Choose the type of objects to duplicate",
+        items = get_available_objects_in_scene,
+    )
+    
+    #search for objects to duplicate by name
+    object_search: bpy.props.StringProperty(
+        name = "Object Search",
+        description = "Search for objects to duplicate by name",
+        default = "",
+    )
+    
+    
 ### PROPERTIES END    
 
 
 #### core functionality
+
+
 #helper function that returns 1 or -1 based on direction of copies on axis
 def change_sign(pos_or_neg):
     if pos_or_neg in {'RIGHT','FORWARD','UP'}:
@@ -124,7 +176,7 @@ def change_sign(pos_or_neg):
         return -1
 
 #duplicated objects remain active for multi axes copying
-def formula(n, distance, axis, negate, collection_n, linked_obj):
+def grid_duplication(n, distance, axis, negate, collection_n, linked_obj):
         
     for sing_obj in bpy.context.selected_objects:
             
@@ -148,14 +200,42 @@ def formula(n, distance, axis, negate, collection_n, linked_obj):
             #move the new object
             newbie.location[axis] = sing_obj.location[axis] + (i+1) * distance * change_sign(negate)
 
+
+#duplicates an object to the location of each selected object
+def spawn_duplication(main, collection_n, linked_obj):
+
+    orig_obj = bpy.context.scene.objects[main]
+    
+    for sing_obj in bpy.context.selected_objects:
+
+        #make new physical object
+        newbie = orig_obj.copy()
+            
+        #handles objects w/o edit data
+        if orig_obj.type != "EMPTY":
+                
+            # automate linked duplication. transfer data
+            if linked_obj:
+                newbie.data = orig_obj.data
+            else:
+                newbie.data = orig_obj.data.copy()
+                
+        #put object in new collectin    
+        collection_n.objects.link(newbie)
+  
+        #move the new object to the location of the host object
+        newbie.location = sing_obj.matrix_world.translation
+
+
 #### core functionality end
 
 #operator 1: runs the duplication program based on user input
-class OT_Duplicate_All(bpy.types.Operator):
-    bl_idname = "n_operator.apply_duplication"
-    bl_label = "My Class Name"
-    bl_description = "Description that shows in blender tooltips"
-
+class NDUPEADDON_OT_Duplicate_Grid(bpy.types.Operator):
+    bl_idname = "ndupeaddon.grid_duplication"
+    bl_label = "Duplicate in a Grid"
+    bl_description = "Duplicate objects in a grid pattern"
+    bl_options = {'REGISTER', 'UNDO'}
+    
     @classmethod
     def poll(cls,context):
         dupe_props = context.scene.dupe_props
@@ -191,33 +271,62 @@ class OT_Duplicate_All(bpy.types.Operator):
         
         linked = dupe_props.linked_duplicate
         
-        ########
-        if not self.poll(context):
-            self.report({'WARNING'}, "No active object, cannot execute operator")
-            return {'CANCELLED'}
         
-        n_x = bpy.data.collections.new("Duplicate Collection")
+        n_x = bpy.data.collections.new("Duplicate Collection Grid")
         context.scene.collection.children.link(n_x)
        
         #run core program for each axis if toggled on
         if toggle_x:
-            formula(copies_x, distance_x, 0, 'RIGHT' if bool(direction_x) else 'LEFT', n_x, linked)
+            grid_duplication(copies_x, distance_x, 0, 'RIGHT' if bool(direction_x) else 'LEFT', n_x, linked)
             
         if toggle_y:
-            formula(copies_y, distance_y, 1, 'FORWARD' if bool(direction_y) else 'BACKWARD', n_x, linked)
+            grid_duplication(copies_y, distance_y, 1, 'FORWARD' if bool(direction_y) else 'BACKWARD', n_x, linked)
             
         if toggle_z:
-            formula(copies_z, distance_z, 2, 'UP' if bool(direction_z) else 'DOWN', n_x, linked)     
+            grid_duplication(copies_z, distance_z, 2, 'UP' if bool(direction_z) else 'DOWN', n_x, linked)     
         
 
         return {"FINISHED"}        
 
 
-#operator 2: resets all properties to default values
-class OT_Reset_All(bpy.types.Operator):
-    bl_idname = "n_operator.reset_dupe_data"
-    bl_label = "My Class Name"
-    bl_description = "Description that shows in blender tooltips"
+#operator 2: duplicates an object to the location of each selected object based on user input
+class NDUPEADDON_OT_Duplicate_Spawn(bpy.types.Operator):
+    bl_idname = "ndupeaddon.spawn_duplication"
+    bl_label = "Duplicate to Selected Objects"
+    bl_description = "Duplicate an object to the location of each selected object"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    @classmethod
+    def poll(cls,context):
+        dupe_props = context.scene.dupe_props
+        
+        #prevent placeholder collections from being added if no object is selected
+        if context.selected_objects and dupe_props.object_selection:
+            return True 
+        
+        
+    def execute(self, context):
+        dupe_props = context.scene.dupe_props
+        
+        main = dupe_props.object_selection
+        
+        n_x = bpy.data.collections.new("Duplicate Collection Spawn")
+        context.scene.collection.children.link(n_x)
+        
+        linked = dupe_props.linked_duplicate
+        
+        #run core program for spawn duplication
+        spawn_duplication(main, n_x, linked)
+        
+        return {"FINISHED"}
+
+
+#operator 3: resets all properties to default values
+class NDUPEADDON_OT_Reset_All(bpy.types.Operator):
+    bl_idname = "ndupeaddon.reset_everything"
+    bl_label = "Reset All"
+    bl_description = "Reset all properties to default values"
+    bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
         
@@ -249,41 +358,49 @@ class OT_Reset_All(bpy.types.Operator):
 
 ###PANELS
 
-class PT_Duplicates_Panel(bpy.types.Panel):
-    bl_idname = "n_panel.duplicates"
+class NDUPEADDON_PT_Duplicates_Panel(bpy.types.Panel):
+    bl_idname = "NDUPEADDON_PT_Duplicates_Panel"
     bl_label = "Object Duplicator"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Tool"
+    bl_category = "N Duplicator"
 
     def draw(self, context):
         layout = self.layout
         props = context.scene.dupe_props
       
         
-        ###axis toggles
-        row1 = layout.row()
-        col1 = row1.column(align=True)
-        col1.prop(props, "toggle_copy_on_x_axis", toggle=True)
-        col1.prop(props, "copies_on_x_axis")
-        col1.prop(props, "distance_on_x_axis")
-        col1.prop(props, "positive_x_axis", toggle=True)
+        layout.prop(props, "mode_of_duplication", expand=True)
+        
+        if props.mode_of_duplication == 'GRID':
+         
+            ###axis toggles
+            row1 = layout.row()
+            col1 = row1.column(align=True)
+            col1.prop(props, "toggle_copy_on_x_axis", toggle=True)
+            col1.prop(props, "copies_on_x_axis")
+            col1.prop(props, "distance_on_x_axis")
+            col1.prop(props, "positive_x_axis", toggle=True)
       
         
-        row2 = layout.row()
-        col2 = row2.column(align=True)
-        col2.prop(props, "toggle_copy_on_y_axis", toggle=True)
-        col2.prop(props, "copies_on_y_axis")
-        col2.prop(props, "distance_on_y_axis")
-        col2.prop(props, "positive_y_axis", toggle=True)
+            row2 = layout.row()
+            col2 = row2.column(align=True)
+            col2.prop(props, "toggle_copy_on_y_axis", toggle=True)
+            col2.prop(props, "copies_on_y_axis")
+            col2.prop(props, "distance_on_y_axis")
+            col2.prop(props, "positive_y_axis", toggle=True)
        
         
-        row3 = layout.row()
-        col3 = row3.column(align=True)
-        col3.prop(props, "toggle_copy_on_z_axis", toggle=True)
-        col3.prop(props, "copies_on_z_axis")
-        col3.prop(props, "distance_on_z_axis")
-        col3.prop(props, "positive_z_axis", toggle=True)
+            row3 = layout.row()
+            col3 = row3.column(align=True)
+            col3.prop(props, "toggle_copy_on_z_axis", toggle=True)
+            col3.prop(props, "copies_on_z_axis")
+            col3.prop(props, "distance_on_z_axis")
+            col3.prop(props, "positive_z_axis", toggle=True)
+        
+        else:
+            layout.prop(props, "object_search")
+            layout.prop(props, "object_selection")
         
         
         #linked duplicate toggle
@@ -292,8 +409,14 @@ class PT_Duplicates_Panel(bpy.types.Panel):
         
         ##buttons
         row4 = layout.row(align=True)
-        row4.operator(OT_Duplicate_All.bl_idname, text="Fire")
-        row4.operator(OT_Reset_All.bl_idname, text="Reset")
+        
+        #swap button text and functionality based on mode of duplication
+        if props.mode_of_duplication == 'GRID':
+            row4.operator(NDUPEADDON_OT_Duplicate_Grid.bl_idname, text="Fire")
+        else:
+            row4.operator(NDUPEADDON_OT_Duplicate_Spawn.bl_idname, text="Populate")
+            
+        row4.operator(NDUPEADDON_OT_Reset_All.bl_idname, text="Reset")
 
 ###PANELS END
 
@@ -301,10 +424,11 @@ class PT_Duplicates_Panel(bpy.types.Panel):
 ###register/unregister
 classes = [
     
-    DuplicationProperties,
-    PT_Duplicates_Panel,
-    OT_Duplicate_All,
-    OT_Reset_All,
+    NDUPEADDON_PG_DuplicationProperties,
+    NDUPEADDON_OT_Duplicate_Grid,
+    NDUPEADDON_OT_Duplicate_Spawn,
+    NDUPEADDON_OT_Reset_All,
+    NDUPEADDON_PT_Duplicates_Panel,
     
 ]
 
@@ -312,7 +436,7 @@ classes = [
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.dupe_props = bpy.props.PointerProperty(type=DuplicationProperties)
+    bpy.types.Scene.dupe_props = bpy.props.PointerProperty(type=NDUPEADDON_PG_DuplicationProperties)
 
 def unregister():
     for cls in reversed(classes):
@@ -320,8 +444,6 @@ def unregister():
     del bpy.types.Scene.dupe_props
     
 if __name__ == "__main__":
-
     register()
-
 
 
